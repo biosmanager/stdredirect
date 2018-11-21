@@ -12,10 +12,6 @@ extern "C" {
 #include <windows.h>
 
 
-/* default stream file descriptors */
-#define STDREDIRECT_STDOUT_FILENO 1
-#define STDREDIRECT_STDERR_FILENO 2
-
 /* standard output/error stream */
 typedef enum STDREDIRECT_STREAM {
     STDREDIRECT_STREAM_STDOUT,

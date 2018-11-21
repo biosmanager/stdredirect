@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
         std::cout << "This stdout string is displayed in the debugger." << std::endl;
 
         // give the thread some time to read from the pipe
-        Sleep(1000);
+        Sleep(100);
 
         if (!STDREDIRECT_unredirectStdout()) {
             return EXIT_FAILURE;
