@@ -29,9 +29,14 @@
 *																						 
 ***********************************************************************************************************************/
 
+#ifndef STDREDIRECT_H
+#define STDREDIRECT_H
+
 #ifdef _WIN32
 
+#if defined (_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -375,3 +380,5 @@ static void STDREDIRECT_debuggerCallback(const char* str) {
 #endif /* __cplusplus */
 
 #endif /* _WIN32 */
+
+#endif /* STDREDIRECT_H */
