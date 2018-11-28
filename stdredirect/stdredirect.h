@@ -244,8 +244,6 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStderrToDebugger() {
 /* undredirect stream */
 static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirection) {
     FILE* consoleFile;
-    FILE* stdoutConsoleFile;
-    FILE* stderrConsoleFile;
 
     /* TODO exit thread gracefully to flush remaining buffer */
     /* terminate pipe reader thread */
@@ -262,6 +260,8 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirec
         redirection->buffer = NULL;
         redirection->bufferSize = 0;
     }
+
+    goto Error;
 
     /* restore std handle */
     if (redirection->stdHandle && !SetStdHandle(redirection->stream == STDREDIRECT_STREAM_STDOUT ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE, redirection->stdHandle)) {
@@ -296,10 +296,8 @@ Error:
     /* CRITICAL unredirect failed */
 
     /* try re-opening console output and show error message */
-    freopen_s(&stdoutConsoleFile, "CONOUT$", "w", stdout);
-    freopen_s(&stderrConsoleFile, "CONOUT$", "w", stderr);
-    fprintf(stdout, "STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
-    fprintf(stderr, "STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
+    freopen_s(&consoleFile, "CONOUT$", "w", stdout);
+    printf("STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.\n", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
 
     redirection->isValid = FALSE;
     
