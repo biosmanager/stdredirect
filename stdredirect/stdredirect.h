@@ -111,17 +111,17 @@ static STDREDIRECT_REDIRECTION* STDREDIRECT_stderrRedirection;
 /* forward declarations */
 
 static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, STDREDIRECT_CALLBACK callback);
-static STDREDIRECT_ERROR STDREDIRECT_destroy(STDREDIRECT_REDIRECTION* redirection);
-static STDREDIRECT_ERROR STDREDIRECT_redirect(STDREDIRECT_REDIRECTION* redirection); 
-static STDREDIRECT_ERROR STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutCallback);
-static STDREDIRECT_ERROR STDREDIRECT_redirectStderr(STDREDIRECT_CALLBACK stderrCallback);
-static STDREDIRECT_ERROR STDREDIRECT_redirectStdoutToDebugger();
-static STDREDIRECT_ERROR STDREDIRECT_redirectStderrToDebugger();
-static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirection);
-static STDREDIRECT_ERROR STDREDIRECT_unredirectStdout();
-static STDREDIRECT_ERROR STDREDIRECT_unredirectStderr();
-static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redirection);
-static void STDREDIRECT_debuggerCallback(const char* str);
+static STDREDIRECT_ERROR        STDREDIRECT_destroy(STDREDIRECT_REDIRECTION* redirection);
+static STDREDIRECT_ERROR        STDREDIRECT_redirect(STDREDIRECT_REDIRECTION* redirection); 
+static STDREDIRECT_ERROR        STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutCallback);
+static STDREDIRECT_ERROR        STDREDIRECT_redirectStderr(STDREDIRECT_CALLBACK stderrCallback);
+static STDREDIRECT_ERROR        STDREDIRECT_redirectStdoutToDebugger();
+static STDREDIRECT_ERROR        STDREDIRECT_redirectStderrToDebugger();
+static STDREDIRECT_ERROR        STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirection);
+static STDREDIRECT_ERROR        STDREDIRECT_unredirectStdout();
+static STDREDIRECT_ERROR        STDREDIRECT_unredirectStderr();
+static void WINAPI              STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redirection);
+static void                     STDREDIRECT_debuggerCallback(const char* str);
 
 
 /* allocate redirection object */
@@ -131,19 +131,20 @@ static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, ST
 		return NULL;
 	}
 
-	redirection->stream = stream;
-	redirection->callback = callback;
+	redirection->stream                        = stream;
+	redirection->callback                      = callback;
 
-	redirection->isRedirected = FALSE;
-	redirection->stdHandle = NULL;
-	redirection->readablePipeEnd = NULL;
-	redirection->writablePipeEnd = NULL;
+	redirection->isRedirected                  = FALSE;
+	redirection->isValid                       = FALSE;
+	redirection->error                         = STDREDIRECT_ERROR_NO_ERROR;
+
+	redirection->stdHandle                     = NULL;
+	redirection->readablePipeEnd               = NULL;
+	redirection->writablePipeEnd               = NULL;
 	redirection->writablePipeEndFileDescriptor = -1;
-	redirection->buffer = NULL;
-	redirection->thread = NULL;
-	redirection->bufferSize = 0;
-	redirection->isValid = FALSE;
-	redirection->error = STDREDIRECT_ERROR_NO_ERROR;
+	redirection->buffer                        = NULL;
+	redirection->thread                        = NULL;
+	redirection->bufferSize                    = 0;
 
 	return redirection;
 }
@@ -151,15 +152,11 @@ static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, ST
 /* destroy redirection object */
 static STDREDIRECT_ERROR STDREDIRECT_destroy(STDREDIRECT_REDIRECTION* redirection) {
 	if (redirection) {
-		BOOL ok = STDREDIRECT_unredirect(redirection);
+		STDREDIRECT_ERROR unredirectError = STDREDIRECT_unredirect(redirection);
 		free(redirection);
 		redirection = NULL;
 
-		if (ok) {
-			return STDREDIRECT_ERROR_NO_ERROR;
-		}
-
-		return STDREDIRECT_ERROR_UNREDIRECT;
+		return unredirectError;
 	}
 
 	return STDREDIRECT_ERROR_NULLPTR;
@@ -312,13 +309,13 @@ Error:
 
 /* revert stdout redirection */
 static STDREDIRECT_ERROR STDREDIRECT_unredirectStdout() {
-    return STDREDIRECT_unredirect(STDREDIRECT_stdoutRedirection);
+    return STDREDIRECT_destroy(STDREDIRECT_stdoutRedirection);
 }
 
 
 /* revert stderr redirection */
 static STDREDIRECT_ERROR STDREDIRECT_unredirectStderr() {
-    return STDREDIRECT_unredirect(STDREDIRECT_stderrRedirection);
+    return STDREDIRECT_destroy(STDREDIRECT_stderrRedirection);
 }
 
 
