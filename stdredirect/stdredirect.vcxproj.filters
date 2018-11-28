@@ -20,6 +20,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="stdredirect_example.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="stdredirect_example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
