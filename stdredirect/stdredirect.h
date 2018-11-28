@@ -51,6 +51,9 @@ extern "C" {
 /* buffered pipe reader buffer size */
 const size_t STDREDIRECT_BUFFER_SIZE = 81;
 
+/* thread exit timeout in ms */
+const DWORD STDREDIRECT_THREAD_EXIT_TIMEOUT_MS = 5;
+
 /* error types */
 typedef enum STDREDIRECT_ERROR {
     /* no error */
@@ -96,8 +99,9 @@ typedef struct STDREDIRECT_REDIRECTION {
     HANDLE               readablePipeEnd;
     HANDLE               writablePipeEnd;
     int                  writablePipeEndFileDescriptor;
-    char*                buffer;
     HANDLE               thread;
+    HANDLE               exitThreadEvent;
+    char*                buffer;
     size_t               bufferSize;
 
 } STDREDIRECT_REDIRECTION;
@@ -142,8 +146,9 @@ static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, ST
     redirection->readablePipeEnd               = NULL;
     redirection->writablePipeEnd               = NULL;
     redirection->writablePipeEndFileDescriptor = -1;
-    redirection->buffer                        = NULL;
     redirection->thread                        = NULL;
+    redirection->exitThreadEvent               = NULL;
+    redirection->buffer                        = NULL;
     redirection->bufferSize                    = 0;
 
     return redirection;
@@ -191,6 +196,12 @@ static STDREDIRECT_ERROR STDREDIRECT_redirect(STDREDIRECT_REDIRECTION* redirecti
     }
     /* reassign standard stream file descriptor to writable pipe end */
     if (_dup2(redirection->writablePipeEndFileDescriptor, redirection->stream == STDREDIRECT_STREAM_STDOUT ? _fileno(stdout) : _fileno(stderr)) == -1) {
+        goto Error;
+    }
+
+    /* exit thread event */
+    redirection->exitThreadEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (redirection->exitThreadEvent == NULL) {
         goto Error;
     }
 
@@ -245,14 +256,25 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStderrToDebugger() {
 static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirection) {
     FILE* consoleFile;
 
-    /* TODO exit thread gracefully to flush remaining buffer */
-    /* terminate pipe reader thread */
+    /* stop pipe reader thread */
     if (redirection->thread) {
-        if (!TerminateThread(redirection->thread, 0)) {
+        /* signal thread to exit */
+        if (!SetEvent(redirection->exitThreadEvent)) {
+            goto Error;
+        }
+        /* check if thread exited itself, terminate otherwise */
+        if (WaitForSingleObject(redirection->thread, STDREDIRECT_THREAD_EXIT_TIMEOUT_MS) != WAIT_OBJECT_0 && !TerminateThread(redirection->thread, EXIT_FAILURE)) {
             goto Error;
         }
         redirection->thread = NULL;
     }
+
+    /* close exit thread event handle */
+    if (redirection->exitThreadEvent && !CloseHandle(redirection->exitThreadEvent)) {
+        goto Error;
+    }
+    redirection->exitThreadEvent = NULL;
+
 
     /* free read buffer */
     if (redirection->buffer) {
@@ -260,8 +282,6 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirec
         redirection->buffer = NULL;
         redirection->bufferSize = 0;
     }
-
-    goto Error;
 
     /* restore std handle */
     if (redirection->stdHandle && !SetStdHandle(redirection->stream == STDREDIRECT_STREAM_STDOUT ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE, redirection->stdHandle)) {
@@ -328,7 +348,7 @@ static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redir
         goto Error;
     }
 
-    while (TRUE) {
+    while (WaitForSingleObject(redirection->exitThreadEvent, 1) == WAIT_TIMEOUT) {
         DWORD numBytesRead;
 
         /* flush all streams so they become readable */
@@ -353,6 +373,8 @@ static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redir
         memset(redirection->buffer, 0, redirection->bufferSize);
     }
 
+    ExitThread(EXIT_SUCCESS);
+
 Error:
     /* cleanup */
 
@@ -361,6 +383,8 @@ Error:
     STDREDIRECT_unredirect(redirection);
 
     redirection->error = STDREDIRECT_ERROR_THREAD;
+
+    ExitThread(EXIT_FAILURE);
 }
 
 
