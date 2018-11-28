@@ -263,7 +263,17 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirec
             goto Error;
         }
         /* check if thread exited itself, terminate otherwise */
-        if (WaitForSingleObject(redirection->thread, STDREDIRECT_THREAD_EXIT_TIMEOUT_MS) != WAIT_OBJECT_0 && !TerminateThread(redirection->thread, EXIT_FAILURE)) {
+        if (WaitForSingleObject(redirection->thread, STDREDIRECT_THREAD_EXIT_TIMEOUT_MS) != WAIT_OBJECT_0 && !TerminateThread(redirection->thread, EXIT_SUCCESS)) {
+            goto Error;
+        }
+        /* check thread exit code */
+        DWORD threadExitCode;
+        if (!GetExitCodeThread(redirection->thread, &threadExitCode) || (threadExitCode && threadExitCode != EXIT_SUCCESS)) {
+            goto Error;
+        }
+
+        /* close thread handle*/
+        if (!CloseHandle(redirection->thread)) {
             goto Error;
         }
         redirection->thread = NULL;
