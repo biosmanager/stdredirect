@@ -53,16 +53,16 @@ const size_t STDREDIRECT_BUFFER_SIZE = 81;
 
 /* error types */
 typedef enum STDREDIRECT_ERROR {
-	/* no error */
-	STDREDIRECT_ERROR_NO_ERROR,
-	/* redirect failed */
-	STDREDIRECT_ERROR_REDIRECT,
-	/* unredirect failed */
-	STDREDIRECT_ERROR_UNREDIRECT,
-	/* error in pipe reader thread */
-	STDREDIRECT_ERROR_THREAD,
-	/* null pointer */
-	STDREDIRECT_ERROR_NULLPTR
+    /* no error */
+    STDREDIRECT_ERROR_NO_ERROR,
+    /* redirect failed */
+    STDREDIRECT_ERROR_REDIRECT,
+    /* unredirect failed */
+    STDREDIRECT_ERROR_UNREDIRECT,
+    /* error in pipe reader thread */
+    STDREDIRECT_ERROR_THREAD,
+    /* null pointer */
+    STDREDIRECT_ERROR_NULLPTR
 
 } STDREDIRECT_ERROR;
 
@@ -78,27 +78,27 @@ typedef void (*STDREDIRECT_CALLBACK)(const char* str);
 
 /* redirection object for a given stream, use STDREDIRECT_create() to create one */
 typedef struct STDREDIRECT_REDIRECTION {
-	/* redirected stream*/
+    /* redirected stream*/
     STDREDIRECT_STREAM   stream;
-	/* output callback */
+    /* output callback */
     STDREDIRECT_CALLBACK callback;
-	/* redirection is redirected */
-	BOOL                 isRedirected;
-	/* redirection is valid */
-	BOOL                 isValid;
-	/* redirection error */
-	STDREDIRECT_ERROR    error;
+    /* redirection is redirected */
+    BOOL                 isRedirected;
+    /* redirection is valid */
+    BOOL                 isValid;
+    /* redirection error */
+    STDREDIRECT_ERROR    error;
 
 
-	/* DO NOT CHANGE THE FOLLOWING VARIABLES */
+    /* DO NOT CHANGE THE FOLLOWING VARIABLES */
 
-	HANDLE               stdHandle;
-	HANDLE               readablePipeEnd;
-	HANDLE               writablePipeEnd;
-	int                  writablePipeEndFileDescriptor;
-	char*                buffer;
-	HANDLE               thread;
-	size_t               bufferSize;
+    HANDLE               stdHandle;
+    HANDLE               readablePipeEnd;
+    HANDLE               writablePipeEnd;
+    int                  writablePipeEndFileDescriptor;
+    char*                buffer;
+    HANDLE               thread;
+    size_t               bufferSize;
 
 } STDREDIRECT_REDIRECTION;
 
@@ -126,48 +126,48 @@ static void                     STDREDIRECT_debuggerCallback(const char* str);
 
 /* allocate redirection object */
 static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, STDREDIRECT_CALLBACK callback) {
-	STDREDIRECT_REDIRECTION* redirection = (STDREDIRECT_REDIRECTION*) malloc(sizeof(STDREDIRECT_REDIRECTION));
-	if (!redirection) {
-		return NULL;
-	}
+    STDREDIRECT_REDIRECTION* redirection = (STDREDIRECT_REDIRECTION*) malloc(sizeof(STDREDIRECT_REDIRECTION));
+    if (!redirection) {
+        return NULL;
+    }
 
-	redirection->stream                        = stream;
-	redirection->callback                      = callback;
+    redirection->stream                        = stream;
+    redirection->callback                      = callback;
 
-	redirection->isRedirected                  = FALSE;
-	redirection->isValid                       = FALSE;
-	redirection->error                         = STDREDIRECT_ERROR_NO_ERROR;
+    redirection->isRedirected                  = FALSE;
+    redirection->isValid                       = FALSE;
+    redirection->error                         = STDREDIRECT_ERROR_NO_ERROR;
 
-	redirection->stdHandle                     = NULL;
-	redirection->readablePipeEnd               = NULL;
-	redirection->writablePipeEnd               = NULL;
-	redirection->writablePipeEndFileDescriptor = -1;
-	redirection->buffer                        = NULL;
-	redirection->thread                        = NULL;
-	redirection->bufferSize                    = 0;
+    redirection->stdHandle                     = NULL;
+    redirection->readablePipeEnd               = NULL;
+    redirection->writablePipeEnd               = NULL;
+    redirection->writablePipeEndFileDescriptor = -1;
+    redirection->buffer                        = NULL;
+    redirection->thread                        = NULL;
+    redirection->bufferSize                    = 0;
 
-	return redirection;
+    return redirection;
 }
 
 /* destroy redirection object */
 static STDREDIRECT_ERROR STDREDIRECT_destroy(STDREDIRECT_REDIRECTION* redirection) {
-	if (redirection) {
-		STDREDIRECT_ERROR unredirectError = STDREDIRECT_unredirect(redirection);
-		free(redirection);
-		redirection = NULL;
+    if (redirection) {
+        STDREDIRECT_ERROR unredirectError = STDREDIRECT_unredirect(redirection);
+        free(redirection);
+        redirection = NULL;
 
-		return unredirectError;
-	}
+        return unredirectError;
+    }
 
-	return STDREDIRECT_ERROR_NULLPTR;
+    return STDREDIRECT_ERROR_NULLPTR;
 }
 
 /* redirect standard stream to callback, that is called when pipe buffer is full, see STDREDIRECT_BUFFER_SIZE */
 static STDREDIRECT_ERROR STDREDIRECT_redirect(STDREDIRECT_REDIRECTION* redirection) {
-	/* unredirect if already redirected */
-	if (redirection->isRedirected && !STDREDIRECT_unredirect(redirection)) {
-		goto Error;
-	}
+    /* unredirect if already redirected */
+    if (redirection->isRedirected && !STDREDIRECT_unredirect(redirection)) {
+        goto Error;
+    }
 
     /* create anonymous pipe */
     if (!CreatePipe(&redirection->readablePipeEnd, &redirection->writablePipeEnd, 0, 0)) {
@@ -200,22 +200,22 @@ static STDREDIRECT_ERROR STDREDIRECT_redirect(STDREDIRECT_REDIRECTION* redirecti
         goto Error;
     }
 
-	redirection->isRedirected = TRUE;
-	redirection->isValid = TRUE;
+    redirection->isRedirected = TRUE;
+    redirection->isValid = TRUE;
 
-	return redirection->error = STDREDIRECT_ERROR_NO_ERROR;
+    return redirection->error = STDREDIRECT_ERROR_NO_ERROR;
 
 Error:
-	/* cleanup */
-	STDREDIRECT_unredirect(redirection);
+    /* cleanup */
+    STDREDIRECT_unredirect(redirection);
 
-	return redirection->error = STDREDIRECT_ERROR_REDIRECT;
+    return redirection->error = STDREDIRECT_ERROR_REDIRECT;
 }
 
 
 /* redirect stdout to callback */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutCallback) {
-	STDREDIRECT_stdoutRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDOUT, stdoutCallback);
+    STDREDIRECT_stdoutRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDOUT, stdoutCallback);
 
     return STDREDIRECT_redirect(STDREDIRECT_stdoutRedirection);
 }
@@ -223,7 +223,7 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutC
 
 /* redirect stderr to callback */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStderr(STDREDIRECT_CALLBACK stderrCallback) {
-	STDREDIRECT_stderrRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDERR, stderrCallback);
+    STDREDIRECT_stderrRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDERR, stderrCallback);
 
     return STDREDIRECT_redirect(STDREDIRECT_stderrRedirection);
 }         
@@ -243,67 +243,67 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStderrToDebugger() {
 
 /* undredirect stream */
 static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirection) {
-	FILE* consoleFile;
-	FILE* stdoutConsoleFile;
-	FILE* stderrConsoleFile;
+    FILE* consoleFile;
+    FILE* stdoutConsoleFile;
+    FILE* stderrConsoleFile;
 
-	/* TODO exit thread gracefully to flush remaining buffer */
-	/* terminate pipe reader thread */
-	if (redirection->thread) {
-		if (!TerminateThread(redirection->thread, 0)) {
-			goto Error;
-		}
-		redirection->thread = NULL;
-	}
+    /* TODO exit thread gracefully to flush remaining buffer */
+    /* terminate pipe reader thread */
+    if (redirection->thread) {
+        if (!TerminateThread(redirection->thread, 0)) {
+            goto Error;
+        }
+        redirection->thread = NULL;
+    }
 
-	/* free read buffer */
-	if (redirection->buffer) {
-		free(redirection->buffer);
-		redirection->buffer = NULL;
-		redirection->bufferSize = 0;
-	}
+    /* free read buffer */
+    if (redirection->buffer) {
+        free(redirection->buffer);
+        redirection->buffer = NULL;
+        redirection->bufferSize = 0;
+    }
 
-	/* restore std handle */
-	if (redirection->stdHandle && !SetStdHandle(redirection->stream == STDREDIRECT_STREAM_STDOUT ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE, redirection->stdHandle)) {
-		goto Error;
-	}
-	redirection->stdHandle = NULL;
+    /* restore std handle */
+    if (redirection->stdHandle && !SetStdHandle(redirection->stream == STDREDIRECT_STREAM_STDOUT ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE, redirection->stdHandle)) {
+        goto Error;
+    }
+    redirection->stdHandle = NULL;
 
-	/* close writable pipe end file descriptor */
-	if (redirection->writablePipeEndFileDescriptor != 1 && _close(redirection->writablePipeEndFileDescriptor) == -1) {
-		goto Error;
-	}
-	redirection->writablePipeEndFileDescriptor = -1;
-	redirection->writablePipeEnd = NULL;
+    /* close writable pipe end file descriptor */
+    if (redirection->writablePipeEndFileDescriptor != 1 && _close(redirection->writablePipeEndFileDescriptor) == -1) {
+        goto Error;
+    }
+    redirection->writablePipeEndFileDescriptor = -1;
+    redirection->writablePipeEnd = NULL;
 
-	/* close readable pipe end */
-	if (redirection->readablePipeEnd && !CloseHandle(redirection->readablePipeEnd)) {
-		goto Error;
-	}
-	redirection->readablePipeEnd = NULL;
+    /* close readable pipe end */
+    if (redirection->readablePipeEnd && !CloseHandle(redirection->readablePipeEnd)) {
+        goto Error;
+    }
+    redirection->readablePipeEnd = NULL;
 
-	/* re-open console */
-	if (freopen_s(&consoleFile, "CONOUT$", "w", redirection->stream == STDREDIRECT_STREAM_STDOUT ? stdout : stderr) != 0) {
-		goto Error;
-	}
+    /* re-open console */
+    if (freopen_s(&consoleFile, "CONOUT$", "w", redirection->stream == STDREDIRECT_STREAM_STDOUT ? stdout : stderr) != 0) {
+        goto Error;
+    }
 
-	redirection->isRedirected = FALSE;
-	redirection->isValid = TRUE;
-	
-	return redirection->error = STDREDIRECT_ERROR_NO_ERROR;
+    redirection->isRedirected = FALSE;
+    redirection->isValid = TRUE;
+    
+    return redirection->error = STDREDIRECT_ERROR_NO_ERROR;
 
 Error:
     /* CRITICAL unredirect failed */
 
-	/* try re-opening console output and show error message */
-	freopen_s(&stdoutConsoleFile, "CONOUT$", "w", stdout);
-	freopen_s(&stderrConsoleFile, "CONOUT$", "w", stderr);
-	fprintf(stdout, "STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
-	fprintf(stderr, "STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
+    /* try re-opening console output and show error message */
+    freopen_s(&stdoutConsoleFile, "CONOUT$", "w", stdout);
+    freopen_s(&stderrConsoleFile, "CONOUT$", "w", stderr);
+    fprintf(stdout, "STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
+    fprintf(stderr, "STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
 
-	redirection->isValid = FALSE;
-	
-	return redirection->error = STDREDIRECT_ERROR_UNREDIRECT;
+    redirection->isValid = FALSE;
+    
+    return redirection->error = STDREDIRECT_ERROR_UNREDIRECT;
 }
 
 
@@ -321,54 +321,54 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirectStderr() {
 
 /* buffered pipe reader, runs in separate thread */
 static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redirection) {
-	/* allocate string buffer */
-	redirection->buffer = (char*) calloc(STDREDIRECT_BUFFER_SIZE, sizeof(char));
-	if (redirection->buffer) {
-		redirection->bufferSize = STDREDIRECT_BUFFER_SIZE;
-	}
-	else {
-		goto Error;
-	}
+    /* allocate string buffer */
+    redirection->buffer = (char*) calloc(STDREDIRECT_BUFFER_SIZE, sizeof(char));
+    if (redirection->buffer) {
+        redirection->bufferSize = STDREDIRECT_BUFFER_SIZE;
+    }
+    else {
+        goto Error;
+    }
 
-	while (TRUE) {
-		DWORD numBytesRead;
+    while (TRUE) {
+        DWORD numBytesRead;
 
-		/* flush all streams so they become readable */
-		if (fflush(NULL) == EOF) {
-			goto Error;
-		}
+        /* flush all streams so they become readable */
+        if (fflush(NULL) == EOF) {
+            goto Error;
+        }
 
-		/* read from readable pipe end, blocks until input is available */
-		/* read 1 character less to leave space for string-terminating null-character */
-		if (!ReadFile(redirection->readablePipeEnd, (void*) redirection->buffer, (DWORD) redirection->bufferSize - 1, &numBytesRead, 0)) {
-			goto Error;
-		}
-		if (numBytesRead > 0) {
-			/* ensure string is null-terminated */
-			redirection->buffer[redirection->bufferSize - 1] = '\0';
+        /* read from readable pipe end, blocks until input is available */
+        /* read 1 character less to leave space for string-terminating null-character */
+        if (!ReadFile(redirection->readablePipeEnd, (void*) redirection->buffer, (DWORD) redirection->bufferSize - 1, &numBytesRead, 0)) {
+            goto Error;
+        }
+        if (numBytesRead > 0) {
+            /* ensure string is null-terminated */
+            redirection->buffer[redirection->bufferSize - 1] = '\0';
 
-			/* run string callback */
-			redirection->callback(redirection->buffer);
-		}
+            /* run string callback */
+            redirection->callback(redirection->buffer);
+        }
 
-		/* clear buffer */
-		memset(redirection->buffer, 0, redirection->bufferSize);
-	}
+        /* clear buffer */
+        memset(redirection->buffer, 0, redirection->bufferSize);
+    }
 
 Error:
-	/* cleanup */
+    /* cleanup */
 
-	/* set thread handle to null before unredirect so it doesn't terminate this thread before */
-	redirection->thread = NULL;
-	STDREDIRECT_unredirect(redirection);
+    /* set thread handle to null before unredirect so it doesn't terminate this thread before */
+    redirection->thread = NULL;
+    STDREDIRECT_unredirect(redirection);
 
-	redirection->error = STDREDIRECT_ERROR_THREAD;
+    redirection->error = STDREDIRECT_ERROR_THREAD;
 }
 
 
 /* forward string to debugger */
 static void STDREDIRECT_debuggerCallback(const char* str) {
-	OutputDebugString(str);
+    OutputDebugString(str);
 }
 
 
