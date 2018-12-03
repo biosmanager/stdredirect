@@ -29,6 +29,12 @@
 *																						 
 ***********************************************************************************************************************/
 
+/**
+ * @file stdredirect.h
+ * @author Matthias Albrecht
+ * @brief Redirect stdout/stderr to callback (e.g. attached debugger).	
+ */
+
 #ifndef STDREDIRECT_H
 #define STDREDIRECT_H
 
@@ -48,49 +54,42 @@ extern "C" {
 #include <windows.h>
 
 
-/* buffered pipe reader buffer size */
+/** @brief Default buffered pipe reader buffer size. */
 const size_t STDREDIRECT_BUFFER_SIZE = 81;
 
-/* thread exit timeout in ms */
+/** @brief Thread exit timeout in ms. */
 const DWORD STDREDIRECT_THREAD_EXIT_TIMEOUT_MS = 5;
 
-/* error types */
+/** @brief Error types. */
 typedef enum STDREDIRECT_ERROR {
-    /* no error */
-    STDREDIRECT_ERROR_NO_ERROR,
-    /* redirect failed */
-    STDREDIRECT_ERROR_REDIRECT,
-    /* unredirect failed */
-    STDREDIRECT_ERROR_UNREDIRECT,
-    /* error in pipe reader thread */
-    STDREDIRECT_ERROR_THREAD,
-    /* null pointer */
-    STDREDIRECT_ERROR_NULLPTR
+    STDREDIRECT_ERROR_NO_ERROR,             /**< no error                    */
+    STDREDIRECT_ERROR_REDIRECT,             /**< redirect failed             */
+    STDREDIRECT_ERROR_UNREDIRECT,           /**< unredirect failed           */
+    STDREDIRECT_ERROR_THREAD,               /**< error in pipe reader thread */
+    STDREDIRECT_ERROR_NULLPTR               /**< null-pointer error          */
 
 } STDREDIRECT_ERROR;
 
-/* standard output/error stream */
+/** @brief Standard output/error streams. */
 typedef enum STDREDIRECT_STREAM {
-    STDREDIRECT_STREAM_STDOUT,
-    STDREDIRECT_STREAM_STDERR
+    STDREDIRECT_STREAM_STDOUT,              /**< stdout                      */
+    STDREDIRECT_STREAM_STDERR               /**< stderr                      */
 
 } STDREDIRECT_STREAM;
 
-/* function pointer to callback function */
+/** @brief Function pointer to callback function. */
 typedef void (*STDREDIRECT_CALLBACK)(const char* str);
 
-/* redirection object for a given stream, use STDREDIRECT_create() to create one */
+/** @brief Redirection object for a given stream. 
+  * 
+  * Use STDREDIRECT_create() to create one. 
+  */
 typedef struct STDREDIRECT_REDIRECTION {
-    /* redirected stream*/
-    STDREDIRECT_STREAM   stream;
-    /* output callback */
-    STDREDIRECT_CALLBACK callback;
-    /* redirection is redirected */
-    BOOL                 isRedirected;
-    /* redirection is valid */
-    BOOL                 isValid;
-    /* redirection error */
-    STDREDIRECT_ERROR    error;
+    STDREDIRECT_STREAM   stream;            /**< redirected stream           */
+    STDREDIRECT_CALLBACK callback;          /**< output callback             */
+    BOOL                 isRedirected;      /**< redirection is redirected   */
+    BOOL                 isValid;           /**< redirection is valid        */
+    STDREDIRECT_ERROR    error;             /**< redirection error           */
 
 
     /* DO NOT CHANGE THE FOLLOWING VARIABLES */
@@ -106,9 +105,9 @@ typedef struct STDREDIRECT_REDIRECTION {
 
 } STDREDIRECT_REDIRECTION;
 
-/* default stdout redirection object */
+/** @brief Default stdout redirection object. */
 static STDREDIRECT_REDIRECTION* STDREDIRECT_stdoutRedirection;       
-/* default stderr redirection object */
+/** @brief Default stderr redirection object. */
 static STDREDIRECT_REDIRECTION* STDREDIRECT_stderrRedirection;
 
 
@@ -128,7 +127,13 @@ static void WINAPI              STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIR
 static void                     STDREDIRECT_debuggerCallback(const char* str);
 
 
-/* allocate redirection object */
+/**
+ * @brief Allocate redirection object.
+ *
+ * @param stream Stream to redirect.
+ * @param callback Pointer to callback function.
+ * @return Pointer to allocated redirection object, NULL on error.
+ */
 static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, STDREDIRECT_CALLBACK callback) {
     STDREDIRECT_REDIRECTION* redirection = (STDREDIRECT_REDIRECTION*) malloc(sizeof(STDREDIRECT_REDIRECTION));
     if (!redirection) {
@@ -149,12 +154,17 @@ static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, ST
     redirection->thread                        = NULL;
     redirection->exitThreadEvent               = NULL;
     redirection->buffer                        = NULL;
-    redirection->bufferSize                    = 0;
+    redirection->bufferSize                    = STDREDIRECT_BUFFER_SIZE;
 
     return redirection;
 }
 
-/* destroy redirection object */
+/**
+ * @brief Destroy redirection object.
+ *
+ * @param redirection Pointer to redirection object.
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_destroy(STDREDIRECT_REDIRECTION* redirection) {
     if (redirection) {
         STDREDIRECT_ERROR unredirectError = STDREDIRECT_unredirect(redirection);
@@ -167,7 +177,14 @@ static STDREDIRECT_ERROR STDREDIRECT_destroy(STDREDIRECT_REDIRECTION* redirectio
     return STDREDIRECT_ERROR_NULLPTR;
 }
 
-/* redirect standard stream to callback, that is called when pipe buffer is full, see STDREDIRECT_BUFFER_SIZE */
+/** 
+ * @brief Redirect standard stream to callback.
+ * 
+ * Callback is called when pipe buffer is full, see STDREDIRECT_REDIRECTION::bufferSize (defaults to STDREDIRECT_BUFFER_SIZE) 
+ *
+ * @param redirection Pointer to redirection object.
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_redirect(STDREDIRECT_REDIRECTION* redirection) {
     /* unredirect if already redirected */
     if (redirection->isRedirected && !STDREDIRECT_unredirect(redirection)) {
@@ -224,7 +241,14 @@ Error:
 }
 
 
-/* redirect stdout to callback */
+/**
+ * @brief Redirect stdout to callback.
+ *
+ * Callback is called when pipe buffer is full, see STDREDIRECT_REDIRECTION::bufferSize (defaults to STDREDIRECT_BUFFER_SIZE)
+ *
+ * @param stdoutCallback Pointer to callback function.
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutCallback) {
     STDREDIRECT_stdoutRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDOUT, stdoutCallback);
 
@@ -232,7 +256,14 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutC
 }
 
 
-/* redirect stderr to callback */
+/**
+ * @brief Redirect stderr to callback.
+ *
+ * Callback is called when pipe buffer is full, see STDREDIRECT_REDIRECTION::bufferSize (defaults to STDREDIRECT_BUFFER_SIZE)
+ *
+ * @param stderrCallback Pointer to callback function.
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStderr(STDREDIRECT_CALLBACK stderrCallback) {
     STDREDIRECT_stderrRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDERR, stderrCallback);
 
@@ -240,19 +271,32 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStderr(STDREDIRECT_CALLBACK stderrC
 }         
 
 
-/* redirect stdout to debugger */                                                               
+/**
+ * @brief Redirect stdout to debugger.
+ *
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStdoutToDebugger() {
     return STDREDIRECT_redirectStdout(&STDREDIRECT_debuggerCallback);
 }
 
 
-/* redirect stderr to debugger */
+/**
+ * @brief Redirect stderr to debugger.
+ *
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStderrToDebugger() {
     return STDREDIRECT_redirectStderr(&STDREDIRECT_debuggerCallback);
 }
 
 
-/* undredirect stream */
+/**
+ * @brief Unredirect redirection back to console.
+ *
+ * @param redirection Pointer to redirection object.
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirection) {
     FILE* consoleFile;
 
@@ -335,19 +379,31 @@ Error:
 }
 
 
-/* revert stdout redirection */
+/**
+ * @brief Unredirect stdout back to console.
+ *
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_unredirectStdout() {
     return STDREDIRECT_destroy(STDREDIRECT_stdoutRedirection);
 }
 
 
-/* revert stderr redirection */
+/**
+ * @brief Unredirect stderr back to console.
+ *
+ * @return ::STDREDIRECT_ERROR
+ */
 static STDREDIRECT_ERROR STDREDIRECT_unredirectStderr() {
     return STDREDIRECT_destroy(STDREDIRECT_stderrRedirection);
 }
 
 
-/* buffered pipe reader, runs in separate thread */
+/**
+ * @brief Buffered pipe reader, runs in separate thread.
+ *
+ * @param redirection Pointer to redirection object.
+ */
 static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redirection) {
     /* allocate string buffer */
     redirection->buffer = (char*) calloc(STDREDIRECT_BUFFER_SIZE, sizeof(char));
@@ -388,7 +444,8 @@ static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redir
 Error:
     /* cleanup */
 
-    /* set thread handle to null before unredirect so it doesn't terminate this thread before */
+    /* close handle and set thread handle to null before unredirect so it doesn't try to terminate this thread */
+    CloseHandle(redirection->thread);
     redirection->thread = NULL;
     STDREDIRECT_unredirect(redirection);
 
@@ -398,7 +455,13 @@ Error:
 }
 
 
-/* forward string to debugger */
+/**
+ * @brief Default debugger callback.
+ *
+ * Forwards string to Windows function OutputDebugString().
+ *
+ * @param str String.
+ */
 static void STDREDIRECT_debuggerCallback(const char* str) {
     OutputDebugString(str);
 }
