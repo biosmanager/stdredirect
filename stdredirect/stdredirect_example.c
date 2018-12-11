@@ -37,11 +37,12 @@ int main() {
 
     /* enable redirection only if debugger is present/attached */
     if (IsDebuggerPresent()) {
-        if (STDREDIRECT_redirectStdoutToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
+        if (STDREDIRECT_redirectAllToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
             getchar();
             return EXIT_FAILURE;
         }
         printf("This stdout string is displayed in the debugger.\n");
+        fprintf(stderr, "This stderr string also.\n");
 
         /* give the thread some time to read from the pipe
            if you unredirect or exit the process too soon after a write to the stream,
@@ -50,7 +51,7 @@ int main() {
          */
         Sleep(1);
 
-        if (STDREDIRECT_unredirectStdout() != STDREDIRECT_ERROR_NO_ERROR) {
+        if (STDREDIRECT_unredirectAll() != STDREDIRECT_ERROR_NO_ERROR) {
             getchar();
             return EXIT_FAILURE;
         }
@@ -61,6 +62,8 @@ int main() {
             return EXIT_FAILURE;
         }
         printf("This stdout string is displayed in the debugger again.\n");
+        
+        fprintf(stderr, "This stderr string is still displayed on the console.\n");
     }
 
     getchar();

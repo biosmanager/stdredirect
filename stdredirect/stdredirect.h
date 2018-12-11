@@ -62,11 +62,12 @@ const DWORD STDREDIRECT_THREAD_EXIT_TIMEOUT_MS = 5;
 
 /** @brief Error types. */
 typedef enum STDREDIRECT_ERROR {
-    STDREDIRECT_ERROR_NO_ERROR,         /**< no error                    */
-    STDREDIRECT_ERROR_REDIRECT,         /**< redirect failed             */
-    STDREDIRECT_ERROR_UNREDIRECT,       /**< unredirect failed           */
-    STDREDIRECT_ERROR_THREAD,           /**< error in pipe reader thread */
-    STDREDIRECT_ERROR_NULLPTR           /**< null-pointer error          */
+    STDREDIRECT_ERROR_NO_ERROR,         /**< no error                             */
+    STDREDIRECT_ERROR_REDIRECT,         /**< redirect failed                      */
+    STDREDIRECT_ERROR_UNREDIRECT,       /**< unredirect failed                    */
+    STDREDIRECT_ERROR_THREAD,           /**< error in pipe reader thread          */
+    STDREDIRECT_ERROR_CREATE,            /**< allocating redirection object failed */
+    STDREDIRECT_ERROR_NULLPTR           /**< null-pointer error                   */
                                              
 } STDREDIRECT_ERROR;                         
                                              
@@ -138,11 +139,13 @@ static STDREDIRECT_ERROR        STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK 
 static STDREDIRECT_ERROR        STDREDIRECT_redirectStderr(STDREDIRECT_CALLBACK stderrCallback, STDREDIRECT_BEHAVIOUR redirectionBehaviour);
 static STDREDIRECT_ERROR        STDREDIRECT_redirectStdoutToDebugger();
 static STDREDIRECT_ERROR        STDREDIRECT_redirectStderrToDebugger();
+static STDREDIRECT_ERROR        STDREDIRECT_redirectAllToDebugger();
 static STDREDIRECT_ERROR        STDREDIRECT_duplicateStdoutToDebugger();
 static STDREDIRECT_ERROR        STDREDIRECT_duplicateStderrToDebugger();
 static STDREDIRECT_ERROR        STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirection);
 static STDREDIRECT_ERROR        STDREDIRECT_unredirectStdout();
 static STDREDIRECT_ERROR        STDREDIRECT_unredirectStderr();
+static STDREDIRECT_ERROR        STDREDIRECT_unredirectAll();
 static void WINAPI              STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redirection);
 static void                     STDREDIRECT_debuggerCallback(const char* str);
 
@@ -281,6 +284,9 @@ Error:
  */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutCallback, STDREDIRECT_BEHAVIOUR redirectionBehaviour) {
     STDREDIRECT_stdoutRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDOUT, stdoutCallback, redirectionBehaviour);
+    if (STDREDIRECT_stdoutRedirection == NULL) {
+        return STDREDIRECT_ERROR_CREATE;
+    }
 
     return STDREDIRECT_redirect(STDREDIRECT_stdoutRedirection);
 }
@@ -295,7 +301,10 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStdout(STDREDIRECT_CALLBACK stdoutC
  * @return ::STDREDIRECT_ERROR
  */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStderr(STDREDIRECT_CALLBACK stderrCallback, STDREDIRECT_BEHAVIOUR redirectionBehaviour) {
-    STDREDIRECT_stderrRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDERR, stderrCallback, redirectionBehaviour);
+    STDREDIRECT_stderrRedirection = STDREDIRECT_create(STDREDIRECT_STREAM_STDERR, stderrCallback, redirectionBehaviour); 
+    if (STDREDIRECT_stderrRedirection == NULL) {
+        return STDREDIRECT_ERROR_CREATE;
+    }
 
     return STDREDIRECT_redirect(STDREDIRECT_stderrRedirection);
 }         
@@ -318,6 +327,26 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStdoutToDebugger() {
  */
 static STDREDIRECT_ERROR STDREDIRECT_redirectStderrToDebugger() {
     return STDREDIRECT_redirectStderr(&STDREDIRECT_debuggerCallback, STDREDIRECT_BEHAVIOUR_REDIRECT);
+}
+
+
+/**
+ * @brief Redirect both stdout and stderr to debugger.
+ *
+ * @return ::STDREDIRECT_ERROR
+ */
+static STDREDIRECT_ERROR STDREDIRECT_redirectAllToDebugger() {
+    STDREDIRECT_ERROR stdoutError = STDREDIRECT_redirectStdoutToDebugger();
+    STDREDIRECT_ERROR stderrError = STDREDIRECT_redirectStderrToDebugger();
+
+    if (stdoutError != STDREDIRECT_ERROR_NO_ERROR) {
+        return stdoutError;
+    }
+    if (stderrError != STDREDIRECT_ERROR_NO_ERROR) {
+        return stderrError;
+    }
+
+    return STDREDIRECT_ERROR_NO_ERROR;
 }
 
 
@@ -451,6 +480,26 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirectStdout() {
  */
 static STDREDIRECT_ERROR STDREDIRECT_unredirectStderr() {
     return STDREDIRECT_destroy(STDREDIRECT_stderrRedirection);
+}
+
+
+/**
+ * @brief Unredirect both stdout and stderr back to console.
+ *
+ * @return ::STDREDIRECT_ERROR
+ */
+static STDREDIRECT_ERROR STDREDIRECT_unredirectAll() {
+    STDREDIRECT_ERROR stdoutError = STDREDIRECT_unredirectStdout();
+    STDREDIRECT_ERROR stderrError = STDREDIRECT_unredirectStderr();
+
+    if (stdoutError != STDREDIRECT_ERROR_NO_ERROR) {
+        return stdoutError;
+    }
+    if (stderrError != STDREDIRECT_ERROR_NO_ERROR) {
+        return stderrError;
+    }
+
+    return STDREDIRECT_ERROR_NO_ERROR;
 }
 
 
