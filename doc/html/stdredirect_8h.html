@@ -99,6 +99,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:af4fe59556c3d5905f7e27e9fade16d5a"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="stdredirect_8h.html#aa1a38582f183daaffa9f872d553fb780">STDREDIRECT_STREAM</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#af4fe59556c3d5905f7e27e9fade16d5a">STDREDIRECT_STREAM</a></td></tr>
 <tr class="memdesc:af4fe59556c3d5905f7e27e9fade16d5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Standard output/error streams.  <a href="#af4fe59556c3d5905f7e27e9fade16d5a">More...</a><br /></td></tr>
 <tr class="separator:af4fe59556c3d5905f7e27e9fade16d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af78ad82eb5fafa930a8ca9173cee66d5"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#af78ad82eb5fafa930a8ca9173cee66d5">STDREDIRECT_BEHAVIOUR</a></td></tr>
+<tr class="memdesc:af78ad82eb5fafa930a8ca9173cee66d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirection behaviour.  <a href="#af78ad82eb5fafa930a8ca9173cee66d5">More...</a><br /></td></tr>
+<tr class="separator:af78ad82eb5fafa930a8ca9173cee66d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b77053677b3c8c783e54418cf653df1"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a>) (const char *str)</td></tr>
 <tr class="memdesc:a2b77053677b3c8c783e54418cf653df1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function pointer to callback function.  <a href="#a2b77053677b3c8c783e54418cf653df1">More...</a><br /></td></tr>
 <tr class="separator:a2b77053677b3c8c783e54418cf653df1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,30 +127,41 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:aa1a38582f183daaffa9f872d553fb780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Standard output/error streams.  <a href="stdredirect_8h.html#aa1a38582f183daaffa9f872d553fb780">More...</a><br /></td></tr>
 <tr class="separator:aa1a38582f183daaffa9f872d553fb780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d51f3d7a3fe0fa31106ce65573c4595"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a> { <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595af7266fcfb40283d1019170c5dc7df0fd">STDREDIRECT_BEHAVIOUR_REDIRECT</a>, 
+<a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595a774eabbd19f4538a3151199d4ae84504">STDREDIRECT_BEHAVIOUR_DUPLICATE</a>
+ }</td></tr>
+<tr class="memdesc:a4d51f3d7a3fe0fa31106ce65573c4595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirection behaviour.  <a href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">More...</a><br /></td></tr>
+<tr class="separator:a4d51f3d7a3fe0fa31106ce65573c4595"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:abf7bd0be3ced44ee324cf0d686bcffd2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_s_t_d_r_e_d_i_r_e_c_t___r_e_d_i_r_e_c_t_i_o_n.html">STDREDIRECT_REDIRECTION</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#abf7bd0be3ced44ee324cf0d686bcffd2">STDREDIRECT_create</a> (<a class="el" href="stdredirect_8h.html#aa1a38582f183daaffa9f872d553fb780">STDREDIRECT_STREAM</a> stream, <a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a> callback)</td></tr>
-<tr class="memdesc:abf7bd0be3ced44ee324cf0d686bcffd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate redirection object.  <a href="#abf7bd0be3ced44ee324cf0d686bcffd2">More...</a><br /></td></tr>
-<tr class="separator:abf7bd0be3ced44ee324cf0d686bcffd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcf3fe4aa09d2d51a42f5ae1f40a6c40"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_s_t_d_r_e_d_i_r_e_c_t___r_e_d_i_r_e_c_t_i_o_n.html">STDREDIRECT_REDIRECTION</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#abcf3fe4aa09d2d51a42f5ae1f40a6c40">STDREDIRECT_create</a> (<a class="el" href="stdredirect_8h.html#aa1a38582f183daaffa9f872d553fb780">STDREDIRECT_STREAM</a> stream, <a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a> callback, <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a> redirectionBehaviour)</td></tr>
+<tr class="memdesc:abcf3fe4aa09d2d51a42f5ae1f40a6c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate redirection object.  <a href="#abcf3fe4aa09d2d51a42f5ae1f40a6c40">More...</a><br /></td></tr>
+<tr class="separator:abcf3fe4aa09d2d51a42f5ae1f40a6c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac08a2c5743d7883fd240226a98f3048f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#ac08a2c5743d7883fd240226a98f3048f">STDREDIRECT_destroy</a> (<a class="el" href="struct_s_t_d_r_e_d_i_r_e_c_t___r_e_d_i_r_e_c_t_i_o_n.html">STDREDIRECT_REDIRECTION</a> *redirection)</td></tr>
 <tr class="memdesc:ac08a2c5743d7883fd240226a98f3048f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy redirection object.  <a href="#ac08a2c5743d7883fd240226a98f3048f">More...</a><br /></td></tr>
 <tr class="separator:ac08a2c5743d7883fd240226a98f3048f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a2b15c315d0536b6696da35e9a1ca23"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#a7a2b15c315d0536b6696da35e9a1ca23">STDREDIRECT_redirect</a> (<a class="el" href="struct_s_t_d_r_e_d_i_r_e_c_t___r_e_d_i_r_e_c_t_i_o_n.html">STDREDIRECT_REDIRECTION</a> *redirection)</td></tr>
 <tr class="memdesc:a7a2b15c315d0536b6696da35e9a1ca23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirect standard stream to callback.  <a href="#a7a2b15c315d0536b6696da35e9a1ca23">More...</a><br /></td></tr>
 <tr class="separator:a7a2b15c315d0536b6696da35e9a1ca23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad89773d6396d748b14ee72c3eb050d6e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#ad89773d6396d748b14ee72c3eb050d6e">STDREDIRECT_redirectStdout</a> (<a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a> stdoutCallback)</td></tr>
-<tr class="memdesc:ad89773d6396d748b14ee72c3eb050d6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirect stdout to callback.  <a href="#ad89773d6396d748b14ee72c3eb050d6e">More...</a><br /></td></tr>
-<tr class="separator:ad89773d6396d748b14ee72c3eb050d6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3e300f4e24a0326f3e434b722fa67d1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#ae3e300f4e24a0326f3e434b722fa67d1">STDREDIRECT_redirectStderr</a> (<a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a> stderrCallback)</td></tr>
-<tr class="memdesc:ae3e300f4e24a0326f3e434b722fa67d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirect stderr to callback.  <a href="#ae3e300f4e24a0326f3e434b722fa67d1">More...</a><br /></td></tr>
-<tr class="separator:ae3e300f4e24a0326f3e434b722fa67d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0efcabc4fa8e14015cf2e4ace190947"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#ac0efcabc4fa8e14015cf2e4ace190947">STDREDIRECT_redirectStdout</a> (<a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a> stdoutCallback, <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a> redirectionBehaviour)</td></tr>
+<tr class="memdesc:ac0efcabc4fa8e14015cf2e4ace190947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirect stdout to callback.  <a href="#ac0efcabc4fa8e14015cf2e4ace190947">More...</a><br /></td></tr>
+<tr class="separator:ac0efcabc4fa8e14015cf2e4ace190947"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf3e9435827ddc10a69dba296bf043bf"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#abf3e9435827ddc10a69dba296bf043bf">STDREDIRECT_redirectStderr</a> (<a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a> stderrCallback, <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a> redirectionBehaviour)</td></tr>
+<tr class="memdesc:abf3e9435827ddc10a69dba296bf043bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirect stderr to callback.  <a href="#abf3e9435827ddc10a69dba296bf043bf">More...</a><br /></td></tr>
+<tr class="separator:abf3e9435827ddc10a69dba296bf043bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a299b0c5ecfb90f301b81e241219b9270"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#a299b0c5ecfb90f301b81e241219b9270">STDREDIRECT_redirectStdoutToDebugger</a> ()</td></tr>
 <tr class="memdesc:a299b0c5ecfb90f301b81e241219b9270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirect stdout to debugger.  <a href="#a299b0c5ecfb90f301b81e241219b9270">More...</a><br /></td></tr>
 <tr class="separator:a299b0c5ecfb90f301b81e241219b9270"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4bbd9b18290bd1214cc328ff136f794"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#ac4bbd9b18290bd1214cc328ff136f794">STDREDIRECT_redirectStderrToDebugger</a> ()</td></tr>
 <tr class="memdesc:ac4bbd9b18290bd1214cc328ff136f794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redirect stderr to debugger.  <a href="#ac4bbd9b18290bd1214cc328ff136f794">More...</a><br /></td></tr>
 <tr class="separator:ac4bbd9b18290bd1214cc328ff136f794"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50d780f347b18556cfa28195b727b6c4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#a50d780f347b18556cfa28195b727b6c4">STDREDIRECT_duplicateStdoutToDebugger</a> ()</td></tr>
+<tr class="memdesc:a50d780f347b18556cfa28195b727b6c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send output that is written to stdout to debugger and console (duplicate).  <a href="#a50d780f347b18556cfa28195b727b6c4">More...</a><br /></td></tr>
+<tr class="separator:a50d780f347b18556cfa28195b727b6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4b491a5cea702d090c310b8e1685b60"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#af4b491a5cea702d090c310b8e1685b60">STDREDIRECT_duplicateStderrToDebugger</a> ()</td></tr>
+<tr class="memdesc:af4b491a5cea702d090c310b8e1685b60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send output that is written to stderr to debugger and console (duplicate).  <a href="#af4b491a5cea702d090c310b8e1685b60">More...</a><br /></td></tr>
+<tr class="separator:af4b491a5cea702d090c310b8e1685b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc8c58e7ceee0c9aa211b117a6a9d821"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stdredirect_8h.html#abc8c58e7ceee0c9aa211b117a6a9d821">STDREDIRECT_unredirect</a> (<a class="el" href="struct_s_t_d_r_e_d_i_r_e_c_t___r_e_d_i_r_e_c_t_i_o_n.html">STDREDIRECT_REDIRECTION</a> *redirection)</td></tr>
 <tr class="memdesc:abc8c58e7ceee0c9aa211b117a6a9d821"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unredirect redirection back to console.  <a href="#abc8c58e7ceee0c9aa211b117a6a9d821">More...</a><br /></td></tr>
 <tr class="separator:abc8c58e7ceee0c9aa211b117a6a9d821"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,6 +198,22 @@ Variables</h2></td></tr>
  </p>
 <dl class="section author"><dt>Author</dt><dd>Matthias Albrecht </dd></dl>
 </div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="af78ad82eb5fafa930a8ca9173cee66d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af78ad82eb5fafa930a8ca9173cee66d5">&#9670;&nbsp;</a></span>STDREDIRECT_BEHAVIOUR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef enum <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a>  <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Redirection behaviour. </p>
+
+</div>
+</div>
 <a id="a2b77053677b3c8c783e54418cf653df1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b77053677b3c8c783e54418cf653df1">&#9670;&nbsp;</a></span>STDREDIRECT_CALLBACK</h2>
 
@@ -229,7 +259,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Redirection object for a given stream. </p>
-<p>Use <a class="el" href="stdredirect_8h.html#abf7bd0be3ced44ee324cf0d686bcffd2" title="Allocate redirection object. ">STDREDIRECT_create()</a> to create one. </p>
+<p>Use <a class="el" href="stdredirect_8h.html#abcf3fe4aa09d2d51a42f5ae1f40a6c40" title="Allocate redirection object. ">STDREDIRECT_create()</a> to create one. </p>
 
 </div>
 </div>
@@ -250,6 +280,28 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a4d51f3d7a3fe0fa31106ce65573c4595"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d51f3d7a3fe0fa31106ce65573c4595">&#9670;&nbsp;</a></span>STDREDIRECT_BEHAVIOUR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Redirection behaviour. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4d51f3d7a3fe0fa31106ce65573c4595af7266fcfb40283d1019170c5dc7df0fd"></a>STDREDIRECT_BEHAVIOUR_REDIRECT&#160;</td><td class="fielddoc"><p>redirect stdout/stderr to callback, output is not sent to attached console </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4d51f3d7a3fe0fa31106ce65573c4595a774eabbd19f4538a3151199d4ae84504"></a>STDREDIRECT_BEHAVIOUR_DUPLICATE&#160;</td><td class="fielddoc"><p>redirect stdout/stderr to callback and also send output to attached console </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="ab98695926b77e1c38fb02027ea6b4114"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab98695926b77e1c38fb02027ea6b4114">&#9670;&nbsp;</a></span>STDREDIRECT_ERROR</h2>
 
@@ -335,8 +387,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="abf7bd0be3ced44ee324cf0d686bcffd2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf7bd0be3ced44ee324cf0d686bcffd2">&#9670;&nbsp;</a></span>STDREDIRECT_create()</h2>
+<a id="abcf3fe4aa09d2d51a42f5ae1f40a6c40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcf3fe4aa09d2d51a42f5ae1f40a6c40">&#9670;&nbsp;</a></span>STDREDIRECT_create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -354,7 +406,13 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a>&#160;</td>
-          <td class="paramname"><em>callback</em>&#160;</td>
+          <td class="paramname"><em>callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a>&#160;</td>
+          <td class="paramname"><em>redirectionBehaviour</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -451,6 +509,62 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="af4b491a5cea702d090c310b8e1685b60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4b491a5cea702d090c310b8e1685b60">&#9670;&nbsp;</a></span>STDREDIRECT_duplicateStderrToDebugger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a> STDREDIRECT_duplicateStderrToDebugger </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Send output that is written to stderr to debugger and console (duplicate). </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114" title="Error types. ">STDREDIRECT_ERROR</a> </dd></dl>
+
+</div>
+</div>
+<a id="a50d780f347b18556cfa28195b727b6c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50d780f347b18556cfa28195b727b6c4">&#9670;&nbsp;</a></span>STDREDIRECT_duplicateStdoutToDebugger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a> STDREDIRECT_duplicateStdoutToDebugger </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Send output that is written to stdout to debugger and console (duplicate). </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114" title="Error types. ">STDREDIRECT_ERROR</a> </dd></dl>
+
+</div>
+</div>
 <a id="a7a2b15c315d0536b6696da35e9a1ca23"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7a2b15c315d0536b6696da35e9a1ca23">&#9670;&nbsp;</a></span>STDREDIRECT_redirect()</h2>
 
@@ -484,11 +598,14 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114" title="Error types. ">STDREDIRECT_ERROR</a> </dd></dl>
+<ul>
+<li>get current handle to selected stream */ </li>
+</ul>
 
 </div>
 </div>
-<a id="ae3e300f4e24a0326f3e434b722fa67d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3e300f4e24a0326f3e434b722fa67d1">&#9670;&nbsp;</a></span>STDREDIRECT_redirectStderr()</h2>
+<a id="abf3e9435827ddc10a69dba296bf043bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf3e9435827ddc10a69dba296bf043bf">&#9670;&nbsp;</a></span>STDREDIRECT_redirectStderr()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -500,8 +617,18 @@ Variables</h2></td></tr>
           <td class="memname">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a> STDREDIRECT_redirectStderr </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a>&#160;</td>
-          <td class="paramname"><em>stderrCallback</em></td><td>)</td>
+          <td class="paramname"><em>stderrCallback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a>&#160;</td>
+          <td class="paramname"><em>redirectionBehaviour</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -551,8 +678,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ad89773d6396d748b14ee72c3eb050d6e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad89773d6396d748b14ee72c3eb050d6e">&#9670;&nbsp;</a></span>STDREDIRECT_redirectStdout()</h2>
+<a id="ac0efcabc4fa8e14015cf2e4ace190947"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0efcabc4fa8e14015cf2e4ace190947">&#9670;&nbsp;</a></span>STDREDIRECT_redirectStdout()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -564,8 +691,18 @@ Variables</h2></td></tr>
           <td class="memname">static <a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114">STDREDIRECT_ERROR</a> STDREDIRECT_redirectStdout </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="stdredirect_8h.html#a2b77053677b3c8c783e54418cf653df1">STDREDIRECT_CALLBACK</a>&#160;</td>
-          <td class="paramname"><em>stdoutCallback</em></td><td>)</td>
+          <td class="paramname"><em>stdoutCallback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595">STDREDIRECT_BEHAVIOUR</a>&#160;</td>
+          <td class="paramname"><em>redirectionBehaviour</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -647,6 +784,9 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114" title="Error types. ">STDREDIRECT_ERROR</a> </dd></dl>
+<ul>
+<li>restore std handle */ </li>
+</ul>
 
 </div>
 </div>

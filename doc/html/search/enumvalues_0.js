@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['stdredirect_5fbehaviour_5fduplicate',['STDREDIRECT_BEHAVIOUR_DUPLICATE',['../stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595a774eabbd19f4538a3151199d4ae84504',1,'stdredirect.h']]],
+  ['stdredirect_5fbehaviour_5fredirect',['STDREDIRECT_BEHAVIOUR_REDIRECT',['../stdredirect_8h.html#a4d51f3d7a3fe0fa31106ce65573c4595af7266fcfb40283d1019170c5dc7df0fd',1,'stdredirect.h']]],
   ['stdredirect_5ferror_5fno_5ferror',['STDREDIRECT_ERROR_NO_ERROR',['../stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114a07b579ffc30eb68bd21365143e6f15a3',1,'stdredirect.h']]],
   ['stdredirect_5ferror_5fnullptr',['STDREDIRECT_ERROR_NULLPTR',['../stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114a0db714aefafa96166559b69da8de9893',1,'stdredirect.h']]],
   ['stdredirect_5ferror_5fredirect',['STDREDIRECT_ERROR_REDIRECT',['../stdredirect_8h.html#ab98695926b77e1c38fb02027ea6b4114a86065641bf91e549a15b698503bacf5a',1,'stdredirect.h']]],
