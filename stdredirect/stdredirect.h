@@ -59,8 +59,10 @@ extern "C" {
 /** @brief Default buffered pipe reader buffer size. */
 const size_t STDREDIRECT_BUFFER_SIZE = 81;
 
+
 /** @brief Thread exit timeout in ms. */
 const DWORD STDREDIRECT_THREAD_EXIT_TIMEOUT_MS = 5;
+
 
 /** @brief Error types. */
 typedef enum STDREDIRECT_ERROR {
@@ -68,26 +70,30 @@ typedef enum STDREDIRECT_ERROR {
     STDREDIRECT_ERROR_REDIRECT,         /**< redirect failed                      */
     STDREDIRECT_ERROR_UNREDIRECT,       /**< unredirect failed                    */
     STDREDIRECT_ERROR_THREAD,           /**< error in pipe reader thread          */
-    STDREDIRECT_ERROR_CREATE,            /**< allocating redirection object failed */
+    STDREDIRECT_ERROR_CREATE,           /**< allocating redirection object failed */
     STDREDIRECT_ERROR_NULLPTR           /**< null-pointer error                   */
                                              
 } STDREDIRECT_ERROR;                         
-                                             
+       
+
 /** @brief Standard output/error streams. */ 
 typedef enum STDREDIRECT_STREAM {            
-    STDREDIRECT_STREAM_STDOUT,      /**< stdout */
-    STDREDIRECT_STREAM_STDERR       /**< stderr */
+    STDREDIRECT_STREAM_STDOUT,          /**< stdout */
+    STDREDIRECT_STREAM_STDERR           /**< stderr */
                                              
 } STDREDIRECT_STREAM;                        
-                                             
+    
+
 /** @brief Redirection behaviour */          
 typedef enum STDREDIRECT_BEHAVIOUR {         
     STDREDIRECT_BEHAVIOUR_REDIRECT,     /**< redirect stdout/stderr to callback, output is not sent to attached console  */
     STDREDIRECT_BEHAVIOUR_DUPLICATE     /**< redirect stdout/stderr to callback and also send output to attached console */
 } STDREDIRECT_BEHAVIOUR;
 
+
 /** @brief Function pointer to callback function. */
 typedef void (*STDREDIRECT_CALLBACK)(const char* str);
+
 
 /** @brief Redirection object for a given stream. 
  * 
@@ -101,10 +107,7 @@ typedef struct STDREDIRECT_REDIRECTION {
     BOOL                  isRedirected;     /**< [read] redirection is redirected   */
     BOOL                  isValid;          /**< [read] redirection is valid        */
     STDREDIRECT_ERROR     error;            /**< [read] redirection error           */
-    /*@}*/
-
-
-    /*  */
+    /*@}*/                 
 
     /** @name Internal
      *  DO NOT CHANGE THESE VARIABLES AT RUNTIME!
@@ -124,6 +127,7 @@ typedef struct STDREDIRECT_REDIRECTION {
     /*@}*/
 
 } STDREDIRECT_REDIRECTION;
+
 
 /** @brief Default stdout redirection object. */
 static STDREDIRECT_REDIRECTION* STDREDIRECT_stdoutRedirection;       
@@ -185,6 +189,7 @@ static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, ST
     return redirection;
 }
 
+
 /**
  * @brief Destroy redirection object.
  *
@@ -202,6 +207,7 @@ static STDREDIRECT_ERROR STDREDIRECT_destroy(STDREDIRECT_REDIRECTION* redirectio
 
     return STDREDIRECT_ERROR_NULLPTR;
 }
+
 
 /** 
  * @brief Redirect standard stream to callback.
@@ -331,9 +337,11 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectStderrToDebugger() {
  * @return ::STDREDIRECT_ERROR
  */
 static STDREDIRECT_ERROR STDREDIRECT_redirectAllToDebugger() {
+
     STDREDIRECT_ERROR stdoutError = STDREDIRECT_redirectStdoutToDebugger();
     STDREDIRECT_ERROR stderrError = STDREDIRECT_redirectStderrToDebugger();
 
+    /* TODO improve error handling */
     if (stdoutError != STDREDIRECT_ERROR_NO_ERROR) {
         return stdoutError;
     }
@@ -353,6 +361,7 @@ static STDREDIRECT_ERROR STDREDIRECT_redirectAllToDebugger() {
 static STDREDIRECT_ERROR STDREDIRECT_duplicateStdoutToDebugger() {
     return STDREDIRECT_redirectStdout(&STDREDIRECT_debuggerCallback, STDREDIRECT_BEHAVIOUR_DUPLICATE);
 }
+
 
 /**
  * @brief Send output that is written to stderr to debugger and console (duplicate).
@@ -440,11 +449,8 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirec
     return redirection->error = STDREDIRECT_ERROR_NO_ERROR;
 
 Error:
-    /* CRITICAL unredirect failed */
-
-    /* try re-opening console output and show error message */
-    freopen_s(&consoleFile, "CONOUT$", "w", stdout);
-    printf("STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.\n", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
+    /* critical error: unredirect failed */
+    _cprintf_s("STDREDIRECT CRITICAL ERROR: Could not un-redirect %s! Redirection is in invalid state.\n", redirection->stream == STDREDIRECT_STREAM_STDOUT ? "stdout" : "stderr");
 
     redirection->isValid = FALSE;
     
@@ -515,6 +521,8 @@ static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redir
         if (fflush(NULL) == EOF) {
             goto Error;
         }
+
+        /* TODO improve timing, sometimes characters are dropped/intercepted by another string */
 
         /* read from readable pipe end, blocks until input is available */
         /* read 1 character less to leave space for string-terminating null-character */
