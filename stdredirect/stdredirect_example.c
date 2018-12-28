@@ -28,7 +28,7 @@
 
 #include "stdredirect.h"
 
-#include <windows.h>
+#include <Windows.h>
 
 #include <stdio.h>
 
@@ -41,29 +41,37 @@ int main() {
             getchar();
             return EXIT_FAILURE;
         }
-        printf("This stdout string is displayed in the debugger.\n");
-        fprintf(stderr, "This stderr string also.\n");
 
-        /* give the thread some time to read from the pipe
+        /* these two strings are being redirected to the Visual Studio output window */
+        printf("This stdout string is displayed in the debugger.\n");
+        fprintf(stderr, "This stderr string is displayed in the debugger.\n");
+
+        /* this goes directly to the console window */
+        STDREDIRECT_printToConsole("This string bypasses the redirection.\n");
+
+        /* give the thread some time to read from the pipe before unredirecting
            if you unredirect or exit the process too soon after a write to the stream,
            it may be swallowed and will never appear
-           may be longer on your system 
+           may be longer on your system
          */
         Sleep(1);
-
+        
+        /* stdout/stderr are displayed on the console again */
         if (STDREDIRECT_unredirectAll() != STDREDIRECT_ERROR_NO_ERROR) {
             getchar();
             return EXIT_FAILURE;
         }
         printf("This stdout string is displayed on the console again.\n");
         
-        if (STDREDIRECT_redirectStdoutToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
+        /* duplication mode prints to the console but also redirects to the debugger */
+        if (STDREDIRECT_duplicateStdoutToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
             getchar();
             return EXIT_FAILURE;
         }
-        printf("This stdout string is displayed in the debugger again.\n");
+        printf("This stdout string is displayed in the debugger and on the console.\n");
         
-        fprintf(stderr, "This stderr string is still displayed on the console.\n");
+        /* this one only appears on the console because it is not redirected */
+        fprintf(stderr, "This stderr string is only displayed on the console.\n");
     }
 
     getchar();

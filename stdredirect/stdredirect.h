@@ -49,9 +49,11 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+#include <Windows.h>
+
+#include <conio.h>
 #include <io.h>
 #include <stdio.h>
-#include <windows.h>
 
 
 /** @brief Default buffered pipe reader buffer size. */
@@ -108,18 +110,17 @@ typedef struct STDREDIRECT_REDIRECTION {
      *  DO NOT CHANGE THESE VARIABLES AT RUNTIME!
      */
     /*@{*/
-    STDREDIRECT_STREAM    stream;                               /**< redirected standard stream                      */
-    STDREDIRECT_CALLBACK  callback;                             /**< output callback                                 */
-    STDREDIRECT_BEHAVIOUR behaviour  ;                          /**< redirection behaviour                           */
-    HANDLE                stdHandle;                            /**< console standard device handle                  */
-    HANDLE                readablePipeEnd;                      /**< readable pipe end                               */
-    HANDLE                writablePipeEnd;                      /**< writable pipe end                               */
-    int                   writablePipeEndFileDescriptor;        /**< C-runtime file descriptor for writable pipe end */
-    HANDLE                thread;                               /**< pipe reader thread                              */
-    HANDLE                exitThreadEvent;                      /**< event to signal thread it should exit           */
-    char*                 buffer;                               /**< pipe reader buffer                              */
-    size_t                bufferSize;                           /**< pipe reader buffer size                         */
-    HANDLE                consoleScreenBuffer;                  /**< default attached console screen buffer          */
+    STDREDIRECT_STREAM    stream;                               /**< redirected standard stream                          */
+    STDREDIRECT_CALLBACK  callback;                             /**< output callback                                     */
+    STDREDIRECT_BEHAVIOUR behaviour  ;                          /**< redirection behaviour                               */
+    HANDLE                stdHandle;                            /**< console standard device handle                      */
+    HANDLE                readablePipeEnd;                      /**< readable pipe end                                   */
+    HANDLE                writablePipeEnd;                      /**< writable pipe end                                   */
+    int                   writablePipeEndFileDescriptor;        /**< C-runtime file descriptor for writable pipe end     */
+    HANDLE                thread;                               /**< pipe reader thread                                  */
+    HANDLE                exitThreadEvent;                      /**< event to signal thread it should exit               */
+    char*                 buffer;                               /**< pipe reader buffer                                  */
+    size_t                bufferSize;                           /**< pipe reader buffer size                             */
     /*@}*/
 
 } STDREDIRECT_REDIRECTION;
@@ -148,6 +149,7 @@ static STDREDIRECT_ERROR        STDREDIRECT_unredirectStderr();
 static STDREDIRECT_ERROR        STDREDIRECT_unredirectAll();
 static void WINAPI              STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redirection);
 static void                     STDREDIRECT_debuggerCallback(const char* str);
+static int                      STDREDIRECT_printToConsole(const char* format, ...);
 
 
 /**
@@ -163,23 +165,22 @@ static STDREDIRECT_REDIRECTION* STDREDIRECT_create(STDREDIRECT_STREAM stream, ST
         return NULL;
     }
 
-    redirection->stream                        = stream;
-    redirection->callback                      = callback;
-    redirection->behaviour                     = redirectionBehaviour;
-
-    redirection->isRedirected                  = FALSE;
-    redirection->isValid                       = FALSE;
-    redirection->error                         = STDREDIRECT_ERROR_NO_ERROR;
-
-    redirection->stdHandle                     = NULL;
-    redirection->readablePipeEnd               = NULL;
-    redirection->writablePipeEnd               = NULL;
-    redirection->writablePipeEndFileDescriptor = -1;
-    redirection->thread                        = NULL;
-    redirection->exitThreadEvent               = NULL;
-    redirection->buffer                        = NULL;
-    redirection->bufferSize                    = STDREDIRECT_BUFFER_SIZE;
-    redirection->consoleScreenBuffer           = NULL;
+    redirection->stream                            = stream;
+    redirection->callback                          = callback;
+    redirection->behaviour                         = redirectionBehaviour;
+                                                   
+    redirection->isRedirected                      = FALSE;
+    redirection->isValid                           = FALSE;
+    redirection->error                             = STDREDIRECT_ERROR_NO_ERROR;
+                                                   
+    redirection->stdHandle                         = NULL;
+    redirection->readablePipeEnd                   = NULL;
+    redirection->writablePipeEnd                   = NULL;
+    redirection->writablePipeEndFileDescriptor     = -1;
+    redirection->thread                            = NULL;
+    redirection->exitThreadEvent                   = NULL;
+    redirection->buffer                            = NULL;
+    redirection->bufferSize                        = STDREDIRECT_BUFFER_SIZE;
 
     return redirection;
 }
@@ -240,12 +241,6 @@ static STDREDIRECT_ERROR STDREDIRECT_redirect(STDREDIRECT_REDIRECTION* redirecti
 
     /* reassign standard stream file descriptor to writable pipe end */
     if (_dup2(redirection->writablePipeEndFileDescriptor, redirection->stream == STDREDIRECT_STREAM_STDOUT ? _fileno(stdout) : _fileno(stderr)) == -1) {
-        goto Error;
-    }
-
-    /* open handle to default console screen buffer */
-    redirection->consoleScreenBuffer = CreateFile("CONOUT$", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (redirection->consoleScreenBuffer == INVALID_HANDLE_VALUE) {
         goto Error;
     }
 
@@ -425,8 +420,8 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirec
     if (redirection->writablePipeEndFileDescriptor != -1 && _close(redirection->writablePipeEndFileDescriptor) == -1) {
         goto Error;
     }
-    redirection->writablePipeEndFileDescriptor = -1;
     redirection->writablePipeEnd = NULL;
+    redirection->writablePipeEndFileDescriptor = -1;
 
     /* close readable pipe end */
     if (redirection->readablePipeEnd && !CloseHandle(redirection->readablePipeEnd)) {
@@ -438,12 +433,6 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirect(STDREDIRECT_REDIRECTION* redirec
     if (freopen_s(&consoleFile, "CONOUT$", "w", redirection->stream == STDREDIRECT_STREAM_STDOUT ? stdout : stderr) != 0) {
         goto Error;
     }
-
-    /* close handle to attached console that it used for output duplication */
-    if (!CloseHandle(redirection->consoleScreenBuffer)) {
-        goto Error;
-    }          
-    redirection->consoleScreenBuffer = NULL;
 
     redirection->isRedirected = FALSE;
     redirection->isValid = TRUE;
@@ -510,7 +499,6 @@ static STDREDIRECT_ERROR STDREDIRECT_unredirectAll() {
  */
 static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redirection) {
     DWORD numBytesRead;
-    DWORD numBytesWritten;
 
     /* allocate string buffer */
     redirection->buffer = (char*) calloc(STDREDIRECT_BUFFER_SIZE, sizeof(char));
@@ -537,9 +525,9 @@ static void WINAPI STDREDIRECT_bufferedPipeReader(STDREDIRECT_REDIRECTION* redir
             /* ensure string is null-terminated */
             redirection->buffer[redirection->bufferSize - 1] = '\0';
 
-            /* duplicate output to attached console */
+            /* duplicate output to console */
             if (redirection->behaviour == STDREDIRECT_BEHAVIOUR_DUPLICATE) {
-                WriteConsole(redirection->consoleScreenBuffer, redirection->buffer, numBytesRead, &numBytesWritten, NULL);
+                _cprintf_s(redirection->buffer);
             }
 
             /* run string callback */
@@ -575,6 +563,26 @@ Error:
  */
 static void STDREDIRECT_debuggerCallback(const char* str) {
     OutputDebugString(str);
+}
+
+
+/**
+ * @brief Print directly to console, bypassing redirection.
+ *
+ * Just calls _cprintf_s().
+ *
+ * @param format Formatted output string, see _cprintf_s().
+ * @return See _cprintf_s().
+ */
+static int STDREDIRECT_printToConsole(const char* format, ...) {
+    int result;
+    
+    va_list argptr;
+    va_start(argptr, format);
+    result = _vcprintf_s(format, argptr);
+    va_end(argptr);
+
+    return result;
 }
 
 

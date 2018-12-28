@@ -28,33 +28,50 @@
 
 #include "stdredirect.h"
 
+#include <Windows.h>
+
 #include <iostream>
 
-int main(int argc, char* argv[]) {
+int main() {
     std::cout << "This stdout string is displayed on the console." << std::endl;
 
-    // enable redirection only if debugger is present/attached
+    /* enable redirection only if debugger is present/attached */
     if (IsDebuggerPresent()) {
-        if (STDREDIRECT_redirectStdoutToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
+        if (STDREDIRECT_redirectAllToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
             std::getchar();
             return EXIT_FAILURE;
-        } 
+        }
+
+        /* these two strings are being redirected to the Visual Studio output window */
         std::cout << "This stdout string is displayed in the debugger." << std::endl;
+        std::cerr << "This stderr string is displayed in the debugger." << std::endl;
 
-        // give the thread some time to read from the pipe
-        Sleep(100);
+        /* this goes directly to the console window */
+        STDREDIRECT_printToConsole("This string bypasses the redirection.\n");
 
-        if (STDREDIRECT_unredirectStdout() != STDREDIRECT_ERROR_NO_ERROR) {
+        /* give the thread some time to read from the pipe before unredirecting
+           if you unredirect or exit the process too soon after a write to the stream,
+           it may be swallowed and will never appear
+           may be longer on your system
+         */
+        Sleep(1);
+
+        /* stdout/stderr are displayed on the console again */
+        if (STDREDIRECT_unredirectAll() != STDREDIRECT_ERROR_NO_ERROR) {
             std::getchar();
             return EXIT_FAILURE;
         }
         std::cout << "This stdout string is displayed on the console again." << std::endl;
 
-        if (STDREDIRECT_redirectStdoutToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
+        /* duplication mode prints to the console but also redirects to the debugger */
+        if (STDREDIRECT_duplicateStdoutToDebugger() != STDREDIRECT_ERROR_NO_ERROR) {
             std::getchar();
             return EXIT_FAILURE;
         }
-        std::cout << "This stdout string is displayed in the debugger again." << std::endl;
+        std::cout << "This stdout string is displayed in the debugger and on the console." << std::endl;
+
+        /* this one only appears on the console because it is not redirected */
+        std::cerr << "This stderr string is only displayed on the console." << std::endl;
     }
 
     std::getchar();
